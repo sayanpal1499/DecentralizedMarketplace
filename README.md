@@ -155,10 +155,10 @@ pub struct Listing {
 
 | Network | Contract ID |
 |---|---|
-| **Testnet** | [`XXX`](https://stellar.expert/explorer/testnet/contract/XXX) |
+| **Testnet** | https://stellar.expert/explorer/testnet/contract/CCMSWRNE67SDG354AXLL6X4SFQNFZSQRDCI5INMA2NCPO6QXZBDNQFEX |
 | **Mainnet** | Coming soon |
 
-> Replace `XXX` with your contract ID after running `stellar contract deploy`.
+
 
 ---
 
