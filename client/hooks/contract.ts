@@ -26,7 +26,7 @@ import {
 
 /** Your deployed Soroban contract ID */
 export const CONTRACT_ADDRESS =
-  "CDJVMAX34YRCQ5JFC6SIOQOVSUY6XWEFYJOLF3SBCKU7CMI3IAP6HPWN";
+  "CDDEKWOR3XC5Q2ZUVV2U6E2DEHMZNFRVNN743UDFOE2FGHYXLYTQYDPN";
 
 /** Network passphrase (testnet by default) */
 export const NETWORK_PASSPHRASE = Networks.TESTNET;
@@ -199,6 +199,10 @@ export function toScValU32(value: number): xdr.ScVal {
   return nativeToScVal(value, { type: "u32" });
 }
 
+export function toScValU64(value: bigint): xdr.ScVal {
+  return nativeToScVal(value, { type: "u64" });
+}
+
 export function toScValI128(value: bigint): xdr.ScVal {
   return nativeToScVal(value, { type: "i128" });
 }
@@ -212,57 +216,164 @@ export function toScValBool(value: boolean): xdr.ScVal {
 }
 
 // ============================================================
-// Supply Chain Tracker — Contract Methods
+// Decentralized Marketplace — Contract Methods
 // ============================================================
 
 /**
- * Add a product to the supply chain.
- * Calls: add_product(product_id: String, origin: String)
+ * Initialize the marketplace (admin only).
+ * Calls: initialize(admin: Address, fee_bps: u32)
  */
-export async function addProduct(
+export async function initialize(
   caller: string,
-  productId: string,
-  origin: string
+  admin: string,
+  feeBps: number
 ) {
   return callContract(
-    "add_product",
-    [toScValString(productId), toScValString(origin)],
+    "initialize",
+    [toScValAddress(admin), toScValU32(feeBps)],
     caller,
     true
   );
 }
 
 /**
- * Update a product's status.
- * Calls: update_status(product_id: String, new_status: String)
+ * Create a new listing.
+ * Calls: create_listing(seller: Address, title: String, description: String, price: i128, token_address: Address) -> u64
  */
-export async function updateProductStatus(
+export async function createListing(
   caller: string,
-  productId: string,
-  newStatus: string
+  seller: string,
+  title: string,
+  description: string,
+  price: bigint,
+  tokenAddress: string
 ) {
   return callContract(
-    "update_status",
-    [toScValString(productId), toScValString(newStatus)],
+    "create_listing",
+    [
+      toScValAddress(seller),
+      toScValString(title),
+      toScValString(description),
+      toScValI128(price),
+      toScValAddress(tokenAddress),
+    ],
     caller,
     true
   );
 }
 
 /**
- * Get product details (read-only).
- * Calls: get_product(product_id: String) -> Map<Symbol, String>
- * Returns: { origin: string, status: string } or null
+ * Buy a listing.
+ * Calls: buy_listing(buyer: Address, listing_id: u64)
  */
-export async function getProduct(
-  productId: string,
+export async function buyListing(
+  caller: string,
+  buyer: string,
+  listingId: bigint
+) {
+  return callContract(
+    "buy_listing",
+    [toScValAddress(buyer), toScValU64(listingId)],
+    caller,
+    true
+  );
+}
+
+/**
+ * Cancel a listing.
+ * Calls: cancel_listing(seller: Address, listing_id: u64)
+ */
+export async function cancelListing(
+  caller: string,
+  seller: string,
+  listingId: bigint
+) {
+  return callContract(
+    "cancel_listing",
+    [toScValAddress(seller), toScValU64(listingId)],
+    caller,
+    true
+  );
+}
+
+/**
+ * Withdraw accumulated platform fees (admin only).
+ * Calls: withdraw_fees(token_address: Address, recipient: Address)
+ */
+export async function withdrawFees(
+  caller: string,
+  tokenAddress: string,
+  recipient: string
+) {
+  return callContract(
+    "withdraw_fees",
+    [toScValAddress(tokenAddress), toScValAddress(recipient)],
+    caller,
+    true
+  );
+}
+
+/**
+ * Update platform fee (admin only).
+ * Calls: update_fee(new_fee_bps: u32)
+ */
+export async function updateFee(
+  caller: string,
+  newFeeBps: number
+) {
+  return callContract(
+    "update_fee",
+    [toScValU32(newFeeBps)],
+    caller,
+    true
+  );
+}
+
+/**
+ * Get listing details (read-only).
+ * Calls: get_listing(listing_id: u64) -> Listing
+ */
+export async function getListing(
+  listingId: bigint,
   caller?: string
 ) {
   return readContract(
-    "get_product",
-    [toScValString(productId)],
+    "get_listing",
+    [toScValU64(listingId)],
     caller
   );
+}
+
+/**
+ * Get total listing count (read-only).
+ * Calls: get_listing_count() -> u64
+ */
+export async function getListingCount(caller?: string) {
+  return readContract("get_listing_count", [], caller);
+}
+
+/**
+ * Get platform fee percent (read-only).
+ * Calls: get_fee_percent() -> u32
+ */
+export async function getFeePercent(caller?: string) {
+  return readContract("get_fee_percent", [], caller);
+}
+
+/**
+ * Get accumulated fee balance (read-only).
+ * Calls: get_fee_balance() -> i128
+ */
+export async function getFeeBalance(caller?: string) {
+  return readContract("get_fee_balance", [], caller);
+}
+
+/**
+ * Get admin address (read-only).
+ * Calls: get_admin() -> Address
+ */
+export async function getAdmin(caller?: string) {
+  return readContract("get_admin", [], caller);
 }
 
 export { nativeToScVal, scValToNative, Address, xdr };

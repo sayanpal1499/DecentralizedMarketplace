@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 interface BadgeProps {
   children: React.ReactNode;
   className?: string;
-  variant?: "default" | "success" | "warning" | "info";
+  variant?: "default" | "success" | "warning" | "info" | "error";
 }
 
 const variants = {
@@ -13,6 +13,7 @@ const variants = {
   success: "border-[#34d399]/20 bg-[#34d399]/10 text-[#34d399]",
   warning: "border-[#fbbf24]/20 bg-[#fbbf24]/10 text-[#fbbf24]",
   info: "border-[#4fc3f7]/20 bg-[#4fc3f7]/10 text-[#4fc3f7]",
+  error: "border-[#f87171]/20 bg-[#f87171]/10 text-[#f87171]",
 };
 
 export function Badge({ children, className, variant = "default" }: BadgeProps) {
