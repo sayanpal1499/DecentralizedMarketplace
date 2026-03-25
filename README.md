@@ -1,4 +1,4 @@
-# 🛒 DecentraMarket — Soroban Smart Contract
+# 🛒 Decentralized Marketplace — Soroban Smart Contract
 
 > A trustless, permissionless decentralized marketplace built on the **Stellar** blockchain using **Soroban** smart contracts.
 
